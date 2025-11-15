@@ -1,5 +1,5 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -8,9 +8,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-bold text-xl md:text-2xl text-blue-600 hover:text-blue-700 transition">
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-lg">
-              <ShoppingBag size={24} className="text-white" />
-            </div>
+            <Image src="/logo.png" alt="TopShopping" width={64} height={64} />
             <span className="hidden sm:inline">TopShopping</span>
           </Link>
 

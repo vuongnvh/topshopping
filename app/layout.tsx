@@ -17,25 +17,35 @@ const geistMono = Geist_Mono({
 export { viewport };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://topshopping.vercel.app"),
+  metadataBase: new URL("https://topshopping-ecru.vercel.app"),
   title: "TopShopping - Top 100 Sản Phẩm Shopee Bán Chạy 2025 | Review & Giá Tốt",
   description: "Tìm & mua những sản phẩm Shopee bán chạy nhất 2025. Review chuyên sâu, hàng chính hãng, giá cạnh tranh, giao nhanh. So sánh giá online dễ dàng với 98+ sản phẩm topShopping.",
   keywords: ["shopee bán chạy", "mua sản phẩm shopee", "review sản phẩm shopee", "giá tốt nhất shopee", "hàng chính hãng", "so sánh giá online 2025", "sản phẩm trending shopee"],
   authors: [{ name: "TopShopping Team" }],
   creator: "TopShopping",
   publisher: "TopShopping",
+  icons: {
+    icon: [
+      { url: "/logo.png", sizes: "any" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/logo.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/logo.png",
+  },
   openGraph: {
     type: "website",
     locale: "vi_VN",
-    url: "https://topshopping.vercel.app",
+    url: "https://topshopping-ecru.vercel.app",
     siteName: "TopShopping",
     title: "TopShopping - Review Sản Phẩm Shopee Bán Chạy Nhất 2025",
     description: "Khám phá 98+ sản phẩm bán chạy từ Shopee. Review chi tiết, giá tốt, hàng chính hãng - tất cả tại TopShopping",
     images: [
       {
-        url: "https://topshopping.vercel.app/og-image.png",
+        url: "https://topshopping-ecru.vercel.app/logo.png",
         width: 1200,
-        height: 630,
+        height: 1200,
         alt: "TopShopping - Trang Review Sản Phẩm Shopee Hàng Đầu Việt Nam",
         type: "image/png",
       },
@@ -46,6 +56,7 @@ export const metadata: Metadata = {
     title: "TopShopping - Top Sản Phẩm Shopee 2025",
     description: "98+ sản phẩm bán chạy, review chi tiết, giá tốt nhất - Mua hàng thông minh qua TopShopping",
     creator: "@TopShopping",
+    images: ["https://topshopping-ecru.vercel.app/logo.png"],
   },
 };
 
@@ -60,7 +71,6 @@ export default function RootLayout({
         <meta charSet="utf-8" />
         <meta name="theme-color" content="#2563eb" />
         <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" />
-        <link rel="icon" href="/favicon.ico" />
         <JsonLd />
       </head>
       <body

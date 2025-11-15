@@ -1,15 +1,17 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = 'https://topshopping-ecru.vercel.app';
+  
   return [
     {
-      url: 'https://shopaff.local',
+      url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
     },
     {
-      url: 'https://shopaff.local#products',
+      url: `${baseUrl}#products`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,

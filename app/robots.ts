@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/'],
     },
-    sitemap: 'https://shopaff.local/sitemap.xml',
+    sitemap: 'https://topshopping-ecru.vercel.app/sitemap.xml',
   };
 }
 

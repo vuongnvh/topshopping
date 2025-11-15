@@ -4,8 +4,13 @@ export default function JsonLd() {
     '@type': 'Organization',
     name: 'TopShopping',
     description: 'Trang review sản phẩm và mua hàng online từ Shopee',
-    url: 'https://topshopping.local',
-    logo: 'https://topshopping.local/logo.png',
+    url: 'https://topshopping-ecru.vercel.app',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://topshopping-ecru.vercel.app/logo.png',
+      width: 512,
+      height: 512,
+    },
     sameAs: [
       'https://www.facebook.com/topshopping',
       'https://www.tiktok.com/@topshopping',
@@ -16,12 +21,12 @@ export default function JsonLd() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'TopShopping',
-    url: 'https://topshopping.local',
+    url: 'https://topshopping-ecru.vercel.app',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://topshopping.local?search={search_term_string}',
+        urlTemplate: 'https://topshopping-ecru.vercel.app?search={search_term_string}',
       },
       query_input: 'required name=search_term_string',
     },
@@ -35,13 +40,13 @@ export default function JsonLd() {
         '@type': 'ListItem',
         position: 1,
         name: 'Trang chủ',
-        item: 'https://topshopping.local',
+        item: 'https://topshopping-ecru.vercel.app',
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'Sản phẩm bán chạy',
-        item: 'https://topshopping.local#products',
+        item: 'https://topshopping-ecru.vercel.app#products',
       },
     ],
   };

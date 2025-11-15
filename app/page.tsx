@@ -1,66 +1,42 @@
-'use client';
-
-import { Suspense, useEffect, useState } from 'react';
+/* eslint-disable react/no-unescaped-entities */
+import type { Metadata } from 'next';
 import Header from './components/Header';
 import HeroBanner from './components/HeroBanner';
 import ProductList from './components/ProductList';
 import Footer from './components/Footer';
 import FAQSection from './components/FAQSection';
-import { Product } from './types/product';
+import AnalyticsTracker from './components/AnalyticsTracker';
+import { getProducts, getCategories } from './lib/products';
 
-export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+// Generate dynamic metadata for better SEO
+export async function generateMetadata(): Promise<Metadata> {
+  const products = await getProducts();
+  const categories = getCategories(products);
+  
+  return {
+    title: `TopShopping - ${products.length} Sản Phẩm Shopee Bán Chạy 2025 | Review & Giá Tốt`,
+    description: `Khám phá ${products.length}+ sản phẩm bán chạy từ Shopee. ${categories.length} danh mục: ${categories.slice(0, 3).join(', ')}. Review chi tiết, hàng chính hãng, giá tốt nhất.`,
+    keywords: [
+      ...categories.map(cat => `${cat} shopee`),
+      'sản phẩm bán chạy shopee',
+      'review sản phẩm shopee',
+      'giá tốt shopee',
+    ],
+  };
+}
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const response = await fetch('/api/products');
-        const data = await response.json();
-        setProducts(data.products);
-        setCategories(data.categories);
-      } catch (error) {
-        console.error('Error loading products:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+// Enable ISR - Revalidate every hour for fresh data
+export const revalidate = 3600; // 1 hour
 
-    loadProducts();
-
-    // Track affiliate clicks
-    const handleAffiliateClick = (event: Event) => {
-      const customEvent = event as CustomEvent<Product>;
-      const clickData = {
-        productId: customEvent.detail.id,
-        productName: customEvent.detail.name,
-        affiliateLink: customEvent.detail.affiliateLink,
-        timestamp: new Date().toISOString(),
-      };
-      
-      // Store in localStorage for tracking
-      const clicks = JSON.parse(localStorage.getItem('affiliateClicks') || '[]');
-      clicks.push(clickData);
-      localStorage.setItem('affiliateClicks', JSON.stringify(clicks));
-
-      // Log for analytics
-      if (typeof (window as any).gtag !== 'undefined') {
-        (window as any).gtag('event', 'affiliate_click', {
-          product_id: customEvent.detail.id,
-          product_name: customEvent.detail.name,
-        });
-      }
-    };
-
-    window.addEventListener('affiliateClick', handleAffiliateClick);
-    return () => {
-      window.removeEventListener('affiliateClick', handleAffiliateClick);
-    };
-  }, []);
+// Server Component - Load data at build/request time for better SEO
+export default async function Home() {
+  // Load products directly from server (SSR)
+  const products = await getProducts();
+  const categories = getCategories(products);
 
   return (
     <>
+      <AnalyticsTracker />
       <Header />
       <main className="min-h-screen">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
@@ -81,15 +57,8 @@ export default function Home() {
               </p>
             </div>
 
-            {isLoading ? (
-              <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              </div>
-            ) : (
-              <Suspense fallback={<div>Loading products...</div>}>
-                <ProductList products={products} categories={categories} />
-              </Suspense>
-            )}
+            {/* Products loaded server-side for better SEO */}
+            <ProductList products={products} categories={categories} />
           </section>
 
           {/* How to Buy Section - SEO Optimized */}
@@ -106,7 +75,7 @@ export default function Home() {
               <div>
                 <div className="text-4xl font-bold text-green-600 mb-2">2️⃣</div>
                 <h4 className="font-bold text-lg text-gray-900 mb-2">Click "Mua Ngay"</h4>
-                <p className="text-gray-700">Nhấn nút "Mua Ngay" để được chuyển đến Shopee với link affiliate</p>
+                <p className="text-gray-700">Nhấn nút &quot;Mua Ngay&quot; để được chuyển đến Shopee với link affiliate</p>
               </div>
               <div>
                 <div className="text-4xl font-bold text-purple-600 mb-2">3️⃣</div>
