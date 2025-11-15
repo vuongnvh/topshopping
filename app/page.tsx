@@ -1,65 +1,126 @@
-import Image from "next/image";
+'use client';
+
+import { Suspense, useEffect, useState } from 'react';
+import Header from './components/Header';
+import HeroBanner from './components/HeroBanner';
+import ProductList from './components/ProductList';
+import Footer from './components/Footer';
+import FAQSection from './components/FAQSection';
+import { Product } from './types/product';
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const response = await fetch('/api/products');
+        const data = await response.json();
+        setProducts(data.products);
+        setCategories(data.categories);
+      } catch (error) {
+        console.error('Error loading products:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProducts();
+
+    // Track affiliate clicks
+    const handleAffiliateClick = (event: Event) => {
+      const customEvent = event as CustomEvent<Product>;
+      const clickData = {
+        productId: customEvent.detail.id,
+        productName: customEvent.detail.name,
+        affiliateLink: customEvent.detail.affiliateLink,
+        timestamp: new Date().toISOString(),
+      };
+      
+      // Store in localStorage for tracking
+      const clicks = JSON.parse(localStorage.getItem('affiliateClicks') || '[]');
+      clicks.push(clickData);
+      localStorage.setItem('affiliateClicks', JSON.stringify(clicks));
+
+      // Log for analytics
+      if (typeof (window as any).gtag !== 'undefined') {
+        (window as any).gtag('event', 'affiliate_click', {
+          product_id: customEvent.detail.id,
+          product_name: customEvent.detail.name,
+        });
+      }
+    };
+
+    window.addEventListener('affiliateClick', handleAffiliateClick);
+    return () => {
+      window.removeEventListener('affiliateClick', handleAffiliateClick);
+    };
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+    <>
+      <Header />
+      <main className="min-h-screen">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          {/* Hero Banner */}
+          <HeroBanner />
+
+          {/* Products Section - SEO Optimized */}
+          <section id="products" className="mt-12 md:mt-16">
+            <div className="mb-8">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+                Top 100 Sản Phẩm Shopee Bán Chạy 2025 - Review Chi Tiết & Giá Tốt Nhất
+              </h1>
+              <p className="text-gray-700 text-xl mb-4 leading-relaxed">
+                Khám phá những sản phẩm bán chạy nhất từ Shopee được review chi tiết bởi chuyên gia. Tất cả đều là <strong>hàng chính hãng</strong> từ các cửa hàng uy tín, <strong>giá cạnh tranh</strong>, và <strong>giao nhanh</strong>.
+              </p>
+              <p className="text-gray-600 text-base">
+                🎯 Tìm sản phẩm tốt nhất, so sánh giá, đọc review thực tế từ hàng ngàn người dùng. Mua hàng qua TopShopping, bạn yên tâm về chất lượng và giá cả.
+              </p>
+            </div>
+
+            {isLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              </div>
+            ) : (
+              <Suspense fallback={<div>Loading products...</div>}>
+                <ProductList products={products} categories={categories} />
+              </Suspense>
+            )}
+          </section>
+
+          {/* How to Buy Section - SEO Optimized */}
+          <section className="mt-16 md:mt-20 bg-gradient-to-r from-indigo-50 to-blue-50 p-8 md:p-12 rounded-xl border border-blue-200">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+              🎯 Cách Mua Hàng Chỉ 3 Bước Đơn Giản
+            </h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
+                <div className="text-4xl font-bold text-blue-600 mb-2">1️⃣</div>
+                <h4 className="font-bold text-lg text-gray-900 mb-2">Tìm sản phẩm yêu thích</h4>
+                <p className="text-gray-700">Duyệt qua danh sách sản phẩm bán chạy được review chi tiết trên TopShopping</p>
+              </div>
+              <div>
+                <div className="text-4xl font-bold text-green-600 mb-2">2️⃣</div>
+                <h4 className="font-bold text-lg text-gray-900 mb-2">Click "Mua Ngay"</h4>
+                <p className="text-gray-700">Nhấn nút "Mua Ngay" để được chuyển đến Shopee với link affiliate</p>
+              </div>
+              <div>
+                <div className="text-4xl font-bold text-purple-600 mb-2">3️⃣</div>
+                <h4 className="font-bold text-lg text-gray-900 mb-2">Hoàn tất đơn hàng</h4>
+                <p className="text-gray-700">Mua sản phẩm, nhận hàng - vui vẻ sử dụng sản phẩm chất lượng!</p>
+              </div>
+            </div>
+          </section>
+
+          {/* FAQ Section */}
+          <FAQSection />
         </div>
       </main>
-    </div>
+      <Footer />
+    </>
   );
 }
